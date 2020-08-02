@@ -1,0 +1,14 @@
+{
+  "name": "simple-state-manager",
+  "description": "Simple state management library",
+  "version": "0.0.1",
+  "author": "muukojima",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^7.6.0"
+  }
+}
