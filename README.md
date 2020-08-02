@@ -1,0 +1,1 @@
+# Simple state management library
