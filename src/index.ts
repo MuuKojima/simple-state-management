@@ -1,28 +1,75 @@
+type Roles = {
+  actions: Actions,
+  mutations: Mutaions,
+  states: object,
+  getters: Getters
+}
+
+type Actions = {
+  [key :string]: Action
+}
+
+type Action = {
+  (context: ActionContext, payload: object): Promise<any>
+}
+
+type ActionContext = {
+  commit: (key: string, payload: object) => void,
+  getters: (key: string, payload: object) => any,
+}
+
+type Mutaions = {
+  [key :string]: Mutation
+}
+
+type Mutation = {
+  (states: MutationContext, payload: object): string
+}
+
+type MutationContext = {
+  states: object
+}
+
+type Getters = {
+  [key :string]: Getter
+}
+
+type Getter = {
+  (context: GetterContext, payload: object): any
+}
+
+type GetterContext = {
+  states: object
+}
+
+type Events = {
+  [key :string]: Array<() => void>;
+}
+
 /**
- * Find `nested` object property
- * @param {Object} obj
- * @param {string} prop
+ * Find target function from nested object
  */
-const findNestedObj = (obj: any, prop: string) => {
+const findFuncFromNestedObjByKey = <T>(obj: any, key: string): T | undefined => {
   if (!obj) {
     return;
   }
-  const parts = prop.split('.');
+  const parts = key.split('.');
   const last = parts.pop() || '';
-  while ((prop = parts.shift() || '')) {
-    obj = obj[prop];
+  while ((key = parts.shift() || '')) {
+    obj = obj[key];
     if (!obj) {
       return;
     }
   }
+
   return obj[last];
 };
 
 /**
- * PubSub class
+ * Publish and Subscribe class
  */
 class PubSub {
-  private events: any;
+  private events: Events;
 
   constructor() {
     this.events = {};
@@ -30,18 +77,15 @@ class PubSub {
 
   /**
    * Subscribe event
-   * @param {string} eventName
-   * @param {Function} callback
-   * @returns {Function} unsubscribe
    */
-  subscribe(eventName: string, callback: any): () => void {
+  public subscribe(eventName: string, callback: () => void): () => void {
     if (!Object.prototype.hasOwnProperty.call(this.events, eventName)) {
       this.events[eventName] = [];
     }
     this.events[eventName].push(callback);
     const unsubscribe = () => {
       this.events[eventName] = this.events[eventName].filter(
-        (event: any) => callback !== event
+        (event: () => void) => callback !== event
       );
     };
     return unsubscribe;
@@ -49,34 +93,24 @@ class PubSub {
 
   /**
    * Publish the event
-   * @param {string} eventName
-   * @param {Object} data
-   * @param {Function}
    */
-  publish(eventName: string, payload = {}): void {
+  public publish(eventName: string): void {
     if (!Object.prototype.hasOwnProperty.call(this.events, eventName)) {
       return;
     }
-    this.events[eventName].map((callback: any) => callback(payload));
+    this.events[eventName].forEach(callback => callback());
   }
-}
-
-interface Roles {
-  actions: object,
-  mutations: object,
-  states: object,
-  getters: object
 }
 
 /**
  * SimpleStateManager class
  */
 export default class SimpleStateManager {
-  private events: any;
-  private actions: any;
-  private mutations: any;
-  private states: any;
-  private _getters: any;
+  private events: PubSub;
+  private actions: Actions;
+  private mutations: Mutaions;
+  private states: object;
+  private _getters: Getters;
 
   constructor(roles: Roles) {
     const {actions, mutations, states, getters} = roles;
@@ -92,17 +126,14 @@ export default class SimpleStateManager {
 
   /**
    * Dispatch action event
-   * @param {string} key
-   * @param {Object|string|number|boolean} payload
-   * @returns {Promise<*>}
    */
-  public dispatch(key: string, payload: any): Promise<any> {
-    const action = findNestedObj(this.actions, key);
+  public dispatch(key: string, payload: object = {}): Promise<any> {
+    const action = findFuncFromNestedObjByKey<Action>(this.actions, key);
     if (typeof action !== 'function') {
       console.error(`Action key doesn't exist => ${key}`);
       return window.Promise.reject();
     }
-    const context = {
+    const context: ActionContext = {
       commit: this.commit.bind(this),
       getters: this.getters.bind(this)
     };
@@ -111,33 +142,30 @@ export default class SimpleStateManager {
 
   /**
    * Commit that modifies the states
-   * @param {string} key
-   * @param {Object|string|number|boolean} payload
-   * @returns {Void}
    */
-  public commit(key: string, payload: any): void {
-    const mutation = findNestedObj(this.mutations, key);
+  public commit(key: string, payload: object): void {
+    const mutation = findFuncFromNestedObjByKey<Mutation>(this.mutations, key);
     if (typeof mutation !== 'function') {
       console.error(`Mutation key doesn't exist => ${key}`);
       return;
     }
-    const publishKey = mutation(this.states, payload);
-    this.events.publish(publishKey);
+    const context: MutationContext = {
+      states: this.states
+    };
+    const eventName = mutation(context, payload);
+    this.events.publish(eventName);
   }
 
   /**
-   * Get state
-   * @param {string} key
-   * @param {Object|string|number|boolean} payload
-   * @returns {Object|string|number|boolean}
+   * Get target state value by key
    */
-  public getters(key: string, payload: any) {
-    const getter = findNestedObj(this._getters, key);
+  public getters(key: string, payload: object): any {
+    const getter = findFuncFromNestedObjByKey<Getter>(this._getters, key);
     if (typeof getter !== 'function') {
       console.error(`Getter key doesn't exist => ${key}`);
       return;
     }
-    const context = {
+    const context: GetterContext = {
       states: this.states
     };
     return getter(context, payload);
@@ -145,11 +173,8 @@ export default class SimpleStateManager {
 
   /**
    * Subscribe event
-   * @param {string} eventName
-   * @param {Function} callback
-   * @returns {Function} unsubscribe
    */
-  public subscribe(eventName: string, callback: any) {
+  public subscribe(eventName: string, callback: () => void): () => void {
     return this.events.subscribe(eventName, callback);
   }
 }

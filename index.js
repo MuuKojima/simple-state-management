@@ -21,20 +21,18 @@ function _createClass(Constructor, protoProps, staticProps) {
 }
 
 /**
- * Find `nested` object property
- * @param {Object} obj
- * @param {string} prop
+ * Find target function from nested object
  */
-var findNestedObj = function findNestedObj(obj, prop) {
+var findFuncFromNestedObjByKey = function findFuncFromNestedObjByKey(obj, key) {
   if (!obj) {
     return;
   }
 
-  var parts = prop.split('.');
+  var parts = key.split('.');
   var last = parts.pop() || '';
 
-  while (prop = parts.shift() || '') {
-    obj = obj[prop];
+  while (key = parts.shift() || '') {
+    obj = obj[key];
 
     if (!obj) {
       return;
@@ -44,7 +42,7 @@ var findNestedObj = function findNestedObj(obj, prop) {
   return obj[last];
 };
 /**
- * PubSub class
+ * Publish and Subscribe class
  */
 
 
@@ -56,9 +54,6 @@ var PubSub = /*#__PURE__*/function () {
   }
   /**
    * Subscribe event
-   * @param {string} eventName
-   * @param {Function} callback
-   * @returns {Function} unsubscribe
    */
 
 
@@ -83,32 +78,28 @@ var PubSub = /*#__PURE__*/function () {
     }
     /**
      * Publish the event
-     * @param {string} eventName
-     * @param {Object} data
-     * @param {Function}
      */
 
   }, {
     key: "publish",
     value: function publish(eventName) {
-      var payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
       if (!Object.prototype.hasOwnProperty.call(this.events, eventName)) {
         return;
       }
 
-      this.events[eventName].map(function (callback) {
-        return callback(payload);
+      this.events[eventName].forEach(function (callback) {
+        return callback();
       });
     }
   }]);
 
   return PubSub;
 }();
-
 /**
  * SimpleStateManager class
  */
+
+
 var SimpleStateManager = /*#__PURE__*/function () {
   function SimpleStateManager(roles) {
     _classCallCheck(this, SimpleStateManager);
@@ -130,16 +121,14 @@ var SimpleStateManager = /*#__PURE__*/function () {
   }
   /**
    * Dispatch action event
-   * @param {string} key
-   * @param {Object|string|number|boolean} payload
-   * @returns {Promise<*>}
    */
 
 
   _createClass(SimpleStateManager, [{
     key: "dispatch",
-    value: function dispatch(key, payload) {
-      var action = findNestedObj(this.actions, key);
+    value: function dispatch(key) {
+      var payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var action = findFuncFromNestedObjByKey(this.actions, key);
 
       if (typeof action !== 'function') {
         console.error("Action key doesn't exist => ".concat(key));
@@ -154,35 +143,32 @@ var SimpleStateManager = /*#__PURE__*/function () {
     }
     /**
      * Commit that modifies the states
-     * @param {string} key
-     * @param {Object|string|number|boolean} payload
-     * @returns {Void}
      */
 
   }, {
     key: "commit",
     value: function commit(key, payload) {
-      var mutation = findNestedObj(this.mutations, key);
+      var mutation = findFuncFromNestedObjByKey(this.mutations, key);
 
       if (typeof mutation !== 'function') {
         console.error("Mutation key doesn't exist => ".concat(key));
         return;
       }
 
-      var publishKey = mutation(this.states, payload);
-      this.events.publish(publishKey);
+      var context = {
+        states: this.states
+      };
+      var eventName = mutation(context, payload);
+      this.events.publish(eventName);
     }
     /**
-     * Get state
-     * @param {string} key
-     * @param {Object|string|number|boolean} payload
-     * @returns {Object|string|number|boolean}
+     * Get target state value by key
      */
 
   }, {
     key: "getters",
     value: function getters(key, payload) {
-      var getter = findNestedObj(this._getters, key);
+      var getter = findFuncFromNestedObjByKey(this._getters, key);
 
       if (typeof getter !== 'function') {
         console.error("Getter key doesn't exist => ".concat(key));
@@ -196,9 +182,6 @@ var SimpleStateManager = /*#__PURE__*/function () {
     }
     /**
      * Subscribe event
-     * @param {string} eventName
-     * @param {Function} callback
-     * @returns {Function} unsubscribe
      */
 
   }, {

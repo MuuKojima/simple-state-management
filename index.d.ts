@@ -1,9 +1,37 @@
-interface Roles {
-    actions: object;
-    mutations: object;
+declare type Roles = {
+    actions: Actions;
+    mutations: Mutaions;
     states: object;
-    getters: object;
-}
+    getters: Getters;
+};
+declare type Actions = {
+    [key: string]: Action;
+};
+declare type Action = {
+    (context: ActionContext, payload: object): Promise<any>;
+};
+declare type ActionContext = {
+    commit: (key: string, payload: object) => void;
+    getters: (key: string, payload: object) => any;
+};
+declare type Mutaions = {
+    [key: string]: Mutation;
+};
+declare type Mutation = {
+    (states: MutationContext, payload: object): string;
+};
+declare type MutationContext = {
+    states: object;
+};
+declare type Getters = {
+    [key: string]: Getter;
+};
+declare type Getter = {
+    (context: GetterContext, payload: object): any;
+};
+declare type GetterContext = {
+    states: object;
+};
 /**
  * SimpleStateManager class
  */
@@ -16,31 +44,19 @@ export default class SimpleStateManager {
     constructor(roles: Roles);
     /**
      * Dispatch action event
-     * @param {string} key
-     * @param {Object|string|number|boolean} payload
-     * @returns {Promise<*>}
      */
-    dispatch(key: string, payload: any): Promise<any>;
+    dispatch(key: string, payload?: object): Promise<any>;
     /**
      * Commit that modifies the states
-     * @param {string} key
-     * @param {Object|string|number|boolean} payload
-     * @returns {Void}
      */
-    commit(key: string, payload: any): void;
+    commit(key: string, payload: object): void;
     /**
-     * Get state
-     * @param {string} key
-     * @param {Object|string|number|boolean} payload
-     * @returns {Object|string|number|boolean}
+     * Get target state value by key
      */
-    getters(key: string, payload: any): any;
+    getters(key: string, payload: object): any;
     /**
      * Subscribe event
-     * @param {string} eventName
-     * @param {Function} callback
-     * @returns {Function} unsubscribe
      */
-    subscribe(eventName: string, callback: any): any;
+    subscribe(eventName: string, callback: () => void): () => void;
 }
 export {};
