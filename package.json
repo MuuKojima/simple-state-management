@@ -4,16 +4,17 @@
   "version": "0.0.1",
   "author": "muukojima",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "dist/index.esm.js",
   "module": "dist/index.esm.js",
   "browser": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
+    "clean": "rm -rf dist",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "rollup -c",
-    "build": "npm run build:types && npm run build:js",
+    "build": "npm run clean && npm run build:types && npm run build:js",
     "lint": "eslint ."
   },
   "devDependencies": {

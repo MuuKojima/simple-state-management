@@ -23,6 +23,21 @@ var RollupTypeScriptBabel = (function () {
     return Constructor;
   }
 
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
   /**
    * Find `nested` object property
    * @param {Object} obj
@@ -54,6 +69,8 @@ var RollupTypeScriptBabel = (function () {
   var PubSub = /*#__PURE__*/function () {
     function PubSub() {
       _classCallCheck(this, PubSub);
+
+      _defineProperty(this, "_events", void 0);
 
       this._events = {};
     }
@@ -99,7 +116,7 @@ var RollupTypeScriptBabel = (function () {
           return [];
         }
 
-        this._events[eventName].map(function (callback) {
+        return this._events[eventName].map(function (callback) {
           return callback(payload);
         });
       }
@@ -115,6 +132,16 @@ var RollupTypeScriptBabel = (function () {
   var SimpleStateManager = /*#__PURE__*/function () {
     function SimpleStateManager(roles) {
       _classCallCheck(this, SimpleStateManager);
+
+      _defineProperty(this, "_events", void 0);
+
+      _defineProperty(this, "_actions", void 0);
+
+      _defineProperty(this, "_mutations", void 0);
+
+      _defineProperty(this, "_states", void 0);
+
+      _defineProperty(this, "_getters", void 0);
 
       var actions = roles.actions,
           mutations = roles.mutations,
