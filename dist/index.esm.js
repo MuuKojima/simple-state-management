@@ -240,4 +240,3 @@ var SimpleStateManager = /*#__PURE__*/function () {
 }();
 
 export default SimpleStateManager;
-pleStateManager;
