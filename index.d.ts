@@ -1,39 +1,46 @@
+interface Roles {
+    actions: object;
+    mutations: object;
+    states: object;
+    getters: object;
+}
 /**
  * SimpleStateManager class
  */
 export default class SimpleStateManager {
-    _events: any;
-    _actions: any;
-    _mutations: any;
-    _states: any;
-    _getters: any;
-    constructor(roles: any);
+    private events;
+    private actions;
+    private mutations;
+    private states;
+    private _getters;
+    constructor(roles: Roles);
     /**
      * Dispatch action event
      * @param {string} key
      * @param {Object|string|number|boolean} payload
      * @returns {Promise<*>}
      */
-    dispatch(key: any, payload: any): any;
+    dispatch(key: string, payload: any): Promise<any>;
     /**
      * Commit that modifies the states
      * @param {string} key
      * @param {Object|string|number|boolean} payload
      * @returns {Void}
      */
-    commit(key: any, payload: any): void;
+    commit(key: string, payload: any): void;
     /**
      * Get state
      * @param {string} key
      * @param {Object|string|number|boolean} payload
      * @returns {Object|string|number|boolean}
      */
-    getters(key: any, payload: any): any;
+    getters(key: string, payload: any): any;
     /**
      * Subscribe event
-     * @param {string} event
+     * @param {string} eventName
      * @param {Function} callback
-     * @returns {function} unsubscribe
+     * @returns {Function} unsubscribe
      */
-    subscribe(event: any, callback: any): any;
+    subscribe(eventName: string, callback: any): any;
 }
+export {};

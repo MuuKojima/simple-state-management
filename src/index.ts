@@ -1,15 +1,15 @@
 /**
  * Find `nested` object property
  * @param {Object} obj
- * @param {String} prop
+ * @param {string} prop
  */
-const findNestedObj = (obj: any, prop: any) => {
+const findNestedObj = (obj: any, prop: string) => {
   if (!obj) {
     return;
   }
   const parts = prop.split('.');
-  const last = parts.pop();
-  while ((prop = parts.shift())) {
+  const last = parts.pop() || '';
+  while ((prop = parts.shift() || '')) {
     obj = obj[prop];
     if (!obj) {
       return;
@@ -22,25 +22,25 @@ const findNestedObj = (obj: any, prop: any) => {
  * PubSub class
  */
 class PubSub {
-  _events: any;
+  private events: any;
 
   constructor() {
-    this._events = {};
+    this.events = {};
   }
 
   /**
    * Subscribe event
    * @param {string} eventName
-   * @param {function} callback
-   * @returns {function} unsubscribe
+   * @param {Function} callback
+   * @returns {Function} unsubscribe
    */
-  subscribe(eventName: any, callback: any) {
-    if (!Object.prototype.hasOwnProperty.call(this._events, eventName)) {
-      this._events[eventName] = [];
+  subscribe(eventName: string, callback: any): () => void {
+    if (!Object.prototype.hasOwnProperty.call(this.events, eventName)) {
+      this.events[eventName] = [];
     }
-    this._events[eventName].push(callback);
+    this.events[eventName].push(callback);
     const unsubscribe = () => {
-      this._events[eventName] = this._events[eventName].filter(
+      this.events[eventName] = this.events[eventName].filter(
         (event: any) => callback !== event
       );
     };
@@ -49,36 +49,44 @@ class PubSub {
 
   /**
    * Publish the event
-   * @param {string} event
+   * @param {string} eventName
    * @param {Object} data
+   * @param {Function}
    */
-  publish(eventName: any, payload = {}) {
-    if (!Object.prototype.hasOwnProperty.call(this._events, eventName)) {
-      return [];
+  publish(eventName: string, payload = {}): void {
+    if (!Object.prototype.hasOwnProperty.call(this.events, eventName)) {
+      return;
     }
-    return this._events[eventName].map((callback: any) => callback(payload));
+    this.events[eventName].map((callback: any) => callback(payload));
   }
+}
+
+interface Roles {
+  actions: object,
+  mutations: object,
+  states: object,
+  getters: object
 }
 
 /**
  * SimpleStateManager class
  */
 export default class SimpleStateManager {
-  _events: any;
-  _actions: any;
-  _mutations: any;
-  _states: any;
-  _getters: any;
+  private events: any;
+  private actions: any;
+  private mutations: any;
+  private states: any;
+  private _getters: any;
 
-  constructor(roles: any) {
+  constructor(roles: Roles) {
     const {actions, mutations, states, getters} = roles;
     if (!actions || !mutations || !states || !getters) {
       throw new Error('You must add actions, mutations, states, getters');
     }
-    this._events = new PubSub();
-    this._actions = actions;
-    this._mutations = mutations;
-    this._states = states;
+    this.events = new PubSub();
+    this.actions = actions;
+    this.mutations = mutations;
+    this.states = states;
     this._getters = getters;
   }
 
@@ -88,8 +96,8 @@ export default class SimpleStateManager {
    * @param {Object|string|number|boolean} payload
    * @returns {Promise<*>}
    */
-  dispatch(key: any, payload: any) {
-    const action = findNestedObj(this._actions, key);
+  public dispatch(key: string, payload: any): Promise<any> {
+    const action = findNestedObj(this.actions, key);
     if (typeof action !== 'function') {
       console.error(`Action key doesn't exist => ${key}`);
       return window.Promise.reject();
@@ -107,14 +115,14 @@ export default class SimpleStateManager {
    * @param {Object|string|number|boolean} payload
    * @returns {Void}
    */
-  commit(key: any, payload: any) {
-    const mutation = findNestedObj(this._mutations, key);
+  public commit(key: string, payload: any): void {
+    const mutation = findNestedObj(this.mutations, key);
     if (typeof mutation !== 'function') {
       console.error(`Mutation key doesn't exist => ${key}`);
       return;
     }
-    const publishKey = mutation(this._states, payload);
-    this._events.publish(publishKey);
+    const publishKey = mutation(this.states, payload);
+    this.events.publish(publishKey);
   }
 
   /**
@@ -123,25 +131,25 @@ export default class SimpleStateManager {
    * @param {Object|string|number|boolean} payload
    * @returns {Object|string|number|boolean}
    */
-  getters(key: any, payload: any) {
+  public getters(key: string, payload: any) {
     const getter = findNestedObj(this._getters, key);
     if (typeof getter !== 'function') {
       console.error(`Getter key doesn't exist => ${key}`);
       return;
     }
     const context = {
-      states: this._states
+      states: this.states
     };
     return getter(context, payload);
   }
 
   /**
    * Subscribe event
-   * @param {string} event
+   * @param {string} eventName
    * @param {Function} callback
-   * @returns {function} unsubscribe
+   * @returns {Function} unsubscribe
    */
-  subscribe(event: any, callback: any) {
-    return this._events.subscribe(event, callback);
+  public subscribe(eventName: string, callback: any) {
+    return this.events.subscribe(eventName, callback);
   }
 }
