@@ -21,21 +21,22 @@ function _createClass(Constructor, protoProps, staticProps) {
 }
 
 /**
- * Find target function from nested object
+ * Find "nested" object property
+ * @see https://github.com/mout/mout/blob/master/src/object/get.js
  */
-var findFuncFromNestedObjByKey = function findFuncFromNestedObjByKey(obj, key) {
+var findNestedObjByProp = function findNestedObjByProp(obj, prop) {
   if (!obj) {
-    return;
+    return null;
   }
 
-  var parts = key.split('.');
+  var parts = prop.split('.');
   var last = parts.pop() || '';
 
-  while (key = parts.shift() || '') {
-    obj = obj[key];
+  while (prop = parts.shift() || '') {
+    obj = obj[prop];
 
     if (!obj) {
-      return;
+      return null;
     }
   }
 
@@ -128,7 +129,7 @@ var SimpleStateManager = /*#__PURE__*/function () {
     key: "dispatch",
     value: function dispatch(key) {
       var payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var action = findFuncFromNestedObjByKey(this.actions, key);
+      var action = findNestedObjByProp(this.actions, key);
 
       if (typeof action !== 'function') {
         console.error("Action key doesn't exist => ".concat(key));
@@ -147,8 +148,9 @@ var SimpleStateManager = /*#__PURE__*/function () {
 
   }, {
     key: "commit",
-    value: function commit(key, payload) {
-      var mutation = findFuncFromNestedObjByKey(this.mutations, key);
+    value: function commit(key) {
+      var payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var mutation = findNestedObjByProp(this.mutations, key);
 
       if (typeof mutation !== 'function') {
         console.error("Mutation key doesn't exist => ".concat(key));
@@ -167,8 +169,9 @@ var SimpleStateManager = /*#__PURE__*/function () {
 
   }, {
     key: "getters",
-    value: function getters(key, payload) {
-      var getter = findFuncFromNestedObjByKey(this._getters, key);
+    value: function getters(key) {
+      var payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var getter = findNestedObjByProp(this._getters, key);
 
       if (typeof getter !== 'function') {
         console.error("Getter key doesn't exist => ".concat(key));

@@ -1,36 +1,36 @@
 declare type Roles = {
     actions: Actions;
     mutations: Mutaions;
-    states: object;
+    states: unknown;
     getters: Getters;
 };
 declare type Actions = {
     [key: string]: Action;
 };
 declare type Action = {
-    (context: ActionContext, payload: object): Promise<any>;
+    (context: ActionContext, payload: unknown): Promise<unknown>;
 };
 declare type ActionContext = {
-    commit: (key: string, payload: object) => void;
-    getters: (key: string, payload: object) => any;
+    commit: (key: string, payload: unknown) => void;
+    getters: (key: string, payload: unknown) => unknown;
 };
 declare type Mutaions = {
     [key: string]: Mutation;
 };
 declare type Mutation = {
-    (states: MutationContext, payload: object): string;
+    (context: MutationContext, payload: unknown): string;
 };
 declare type MutationContext = {
-    states: object;
+    states: unknown;
 };
 declare type Getters = {
     [key: string]: Getter;
 };
 declare type Getter = {
-    (context: GetterContext, payload: object): any;
+    (context: GetterContext, payload: unknown): unknown;
 };
 declare type GetterContext = {
-    states: object;
+    states: unknown;
 };
 /**
  * SimpleStateManager class
@@ -45,15 +45,15 @@ export default class SimpleStateManager {
     /**
      * Dispatch action event
      */
-    dispatch(key: string, payload?: object): Promise<any>;
+    dispatch(key: string, payload?: unknown): Promise<unknown>;
     /**
      * Commit that modifies the states
      */
-    commit(key: string, payload: object): void;
+    commit(key: string, payload?: unknown): void;
     /**
      * Get target state value by key
      */
-    getters(key: string, payload: object): any;
+    getters(key: string, payload?: unknown): unknown;
     /**
      * Subscribe event
      */

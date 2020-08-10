@@ -1,7 +1,7 @@
 type Roles = {
   actions: Actions,
   mutations: Mutaions,
-  states: object,
+  states: unknown,
   getters: Getters
 }
 
@@ -10,12 +10,12 @@ type Actions = {
 }
 
 type Action = {
-  (context: ActionContext, payload: object): Promise<any>
+  (context: ActionContext, payload: unknown): Promise<unknown>
 }
 
 type ActionContext = {
-  commit: (key: string, payload: object) => void,
-  getters: (key: string, payload: object) => any,
+  commit: (key: string, payload: unknown) => void,
+  getters: (key: string, payload: unknown) => unknown,
 }
 
 type Mutaions = {
@@ -23,11 +23,11 @@ type Mutaions = {
 }
 
 type Mutation = {
-  (states: MutationContext, payload: object): string
+  (context: MutationContext, payload: unknown): string
 }
 
 type MutationContext = {
-  states: object
+  states: unknown
 }
 
 type Getters = {
@@ -35,11 +35,11 @@ type Getters = {
 }
 
 type Getter = {
-  (context: GetterContext, payload: object): any
+  (context: GetterContext, payload: unknown): unknown
 }
 
 type GetterContext = {
-  states: object
+  states: unknown
 }
 
 type Events = {
@@ -47,21 +47,21 @@ type Events = {
 }
 
 /**
- * Find target function from nested object
+ * Find "nested" object property
+ * @see https://github.com/mout/mout/blob/master/src/object/get.js
  */
-const findFuncFromNestedObjByKey = <T>(obj: any, key: string): T | undefined => {
+const findNestedObjByProp = <T>(obj: {[key :string]: any}, prop: string): T | null => {
   if (!obj) {
-    return;
+    return null;
   }
-  const parts = key.split('.');
+  const parts = prop.split('.');
   const last = parts.pop() || '';
-  while ((key = parts.shift() || '')) {
-    obj = obj[key];
+  while ((prop = parts.shift() || '')) {
+    obj = obj[prop];
     if (!obj) {
-      return;
+      return null;
     }
   }
-
   return obj[last];
 };
 
@@ -109,7 +109,7 @@ export default class SimpleStateManager {
   private events: PubSub;
   private actions: Actions;
   private mutations: Mutaions;
-  private states: object;
+  private states: unknown;
   private _getters: Getters;
 
   constructor(roles: Roles) {
@@ -127,8 +127,8 @@ export default class SimpleStateManager {
   /**
    * Dispatch action event
    */
-  public dispatch(key: string, payload: object = {}): Promise<any> {
-    const action = findFuncFromNestedObjByKey<Action>(this.actions, key);
+  public dispatch(key: string, payload: unknown = {}): Promise<unknown> {
+    const action = findNestedObjByProp<Action>(this.actions, key);
     if (typeof action !== 'function') {
       console.error(`Action key doesn't exist => ${key}`);
       return window.Promise.reject();
@@ -143,8 +143,8 @@ export default class SimpleStateManager {
   /**
    * Commit that modifies the states
    */
-  public commit(key: string, payload: object): void {
-    const mutation = findFuncFromNestedObjByKey<Mutation>(this.mutations, key);
+  public commit(key: string, payload: unknown = {}): void {
+    const mutation = findNestedObjByProp<Mutation>(this.mutations, key);
     if (typeof mutation !== 'function') {
       console.error(`Mutation key doesn't exist => ${key}`);
       return;
@@ -159,8 +159,8 @@ export default class SimpleStateManager {
   /**
    * Get target state value by key
    */
-  public getters(key: string, payload: object): any {
-    const getter = findFuncFromNestedObjByKey<Getter>(this._getters, key);
+  public getters(key: string, payload: unknown = {}): unknown {
+    const getter = findNestedObjByProp<Getter>(this._getters, key);
     if (typeof getter !== 'function') {
       console.error(`Getter key doesn't exist => ${key}`);
       return;

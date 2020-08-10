@@ -1,10 +1,6 @@
 {
-  "extends": "eslint:recommended",
-  "env": {
-    "browser": true,
-    "es6": true
-  },
-  "parserOptions": {
-    "sourceType": "module"
-  }
+  "extends": ["plugin:@typescript-eslint/recommended"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "rules": {}
 }

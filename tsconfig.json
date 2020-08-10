@@ -1,18 +1,16 @@
 {
   "compilerOptions": {
+    "strict": false,
+    "target": "esnext",
+    "module": "esnext",
     "allowSyntheticDefaultImports": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "moduleResolution": "node",
     "esModuleInterop": true,
     "noUnusedLocals": true,
-    "noImplicitAny": true,
     "declarationDir": "./",
     "declaration": true,
-    "target": "esnext",
-    "module": "esnext",
-    "strict": true
   },
   "include": [
     "src/**/*"
