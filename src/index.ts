@@ -1,48 +1,48 @@
-type Roles = {
+interface Stores {
   actions: Actions,
   mutations: Mutaions,
   states: unknown,
   getters: Getters
 }
 
-type Actions = {
+interface Actions {
   [key :string]: Action
 }
 
-type Action = {
+interface Action {
   (context: ActionContext, payload: unknown): Promise<unknown>
 }
 
-type ActionContext = {
+interface ActionContext {
   commit: (key: string, payload: unknown) => void,
   getters: (key: string, payload: unknown) => unknown,
 }
 
-type Mutaions = {
+interface Mutaions {
   [key :string]: Mutation
 }
 
-type Mutation = {
+interface Mutation {
   (context: MutationContext, payload: unknown): string
 }
 
-type MutationContext = {
+interface MutationContext {
   states: unknown
 }
 
-type Getters = {
+interface Getters {
   [key :string]: Getter
 }
 
-type Getter = {
+interface Getter {
   (context: GetterContext, payload: unknown): unknown
 }
 
-type GetterContext = {
+interface GetterContext {
   states: unknown
 }
 
-type Events = {
+interface Events  {
   [key :string]: Array<() => void>;
 }
 
@@ -112,8 +112,8 @@ export default class SimpleStateManager {
   private states: unknown;
   private _getters: Getters;
 
-  constructor(roles: Roles) {
-    const {actions, mutations, states, getters} = roles;
+  constructor(stores: Stores) {
+    const {actions, mutations, states, getters} = stores;
     if (!actions || !mutations || !states || !getters) {
       throw new Error('You must add actions, mutations, states, getters');
     }

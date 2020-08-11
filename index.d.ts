@@ -1,37 +1,37 @@
-declare type Roles = {
+interface Roles {
     actions: Actions;
     mutations: Mutaions;
     states: unknown;
     getters: Getters;
-};
-declare type Actions = {
+}
+interface Actions {
     [key: string]: Action;
-};
-declare type Action = {
+}
+interface Action {
     (context: ActionContext, payload: unknown): Promise<unknown>;
-};
-declare type ActionContext = {
+}
+interface ActionContext {
     commit: (key: string, payload: unknown) => void;
     getters: (key: string, payload: unknown) => unknown;
-};
-declare type Mutaions = {
+}
+interface Mutaions {
     [key: string]: Mutation;
-};
-declare type Mutation = {
+}
+interface Mutation {
     (context: MutationContext, payload: unknown): string;
-};
-declare type MutationContext = {
+}
+interface MutationContext {
     states: unknown;
-};
-declare type Getters = {
+}
+interface Getters {
     [key: string]: Getter;
-};
-declare type Getter = {
+}
+interface Getter {
     (context: GetterContext, payload: unknown): unknown;
-};
-declare type GetterContext = {
+}
+interface GetterContext {
     states: unknown;
-};
+}
 /**
  * SimpleStateManager class
  */

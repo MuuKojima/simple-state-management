@@ -12,7 +12,7 @@
     "clean": "rm -rf dist",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "rollup -c",
-    "build": "npm run clean && npm run build:types && npm run build:js",
+    "build": "npm run lint && npm run clean && npm run build:types && npm run build:js",
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {},
