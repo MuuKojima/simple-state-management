@@ -1,12 +1,20 @@
 interface Stores {
-  actions: Actions,
+  actions: Actions
   mutations: Mutaions,
   states: unknown,
   getters: Getters
 }
 
-interface Actions {
+type Actions = ActionKeys | NestedActions;
+type Mutaions = MuationKeys | NestedMutaions
+type Getters = GetterKeys | NestedGetters
+
+interface ActionKeys {
   [key :string]: Action
+}
+
+interface NestedActions {
+  [key :string]: Actions
 }
 
 interface Action {
@@ -18,8 +26,12 @@ interface ActionContext {
   getters: (key: string, payload: unknown) => unknown,
 }
 
-interface Mutaions {
-  [key :string]: Mutation
+interface NestedMutaions {
+  [key :string]: Mutaions
+}
+
+interface MuationKeys {
+  [key :string]: Mutaions
 }
 
 interface Mutation {
@@ -30,8 +42,12 @@ interface MutationContext {
   states: unknown
 }
 
-interface Getters {
-  [key :string]: Getter
+interface NestedGetters {
+  [key :string]: Getters
+}
+
+interface GetterKeys {
+  [key :string]: Getters
 }
 
 interface Getter {
@@ -46,11 +62,15 @@ interface Events  {
   [key :string]: Array<() => void>;
 }
 
+interface NestedObj<T> {
+  [key :string]: T;
+}
+
 /**
  * Find "nested" object property
  * @see https://github.com/mout/mout/blob/master/src/object/get.js
  */
-const findNestedObjByProp = <T>(obj: {[key :string]: any}, prop: string): T | null => {
+const findNestedObjByProp = <T>(obj: NestedObj<T> | {}, prop: string): T => {
   if (!obj) {
     return null;
   }
