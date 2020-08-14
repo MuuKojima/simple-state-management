@@ -60,16 +60,16 @@ interface StringKeyObj {
 }
 
 /**
- * Find "nested" object property
- * @see https://github.com/mout/mout/blob/master/src/object/get.js
+ * Find "nested" object
  */
-const findNestedObjByProp = <T>(obj: StringKeyObj, prop: string): T => {
+const findNestedObj = <T>(obj: StringKeyObj, prop: string): T => {
   const paths = prop.split('.');
   const location = paths.reduce((object, path) => {
       return (object || {})[path];
   }, obj);
   return location;
 };
+
 /**
  * Publish and Subscribe class
  */
@@ -127,7 +127,7 @@ export default class SimpleStateManager {
    * Dispatch action event
    */
   public dispatch(key: string, payload: Payload): Promise<unknown> {
-    const action = findNestedObjByProp<Action>(this.actions, key);
+    const action = findNestedObj<Action>(this.actions, key);
     if (typeof action !== 'function') {
       console.error(`Action key doesn't exist => ${key}`);
       return window.Promise.reject();
@@ -142,7 +142,7 @@ export default class SimpleStateManager {
    * Commit that modifies the statesZZ
    */
   public commit(key: string, payload: Payload): void {
-    const mutation = findNestedObjByProp<Mutation>(this.mutations, key);
+    const mutation = findNestedObj<Mutation>(this.mutations, key);
     if (typeof mutation !== 'function') {
       console.error(`Mutation key doesn't exist => ${key}`);
       return;
@@ -157,7 +157,7 @@ export default class SimpleStateManager {
    * Get target state value by key
    */
   public getters(key: string, payload: Payload): unknown {
-    const getter = findNestedObjByProp<Getter>(this._getters, key);
+    const getter = findNestedObj<Getter>(this._getters, key);
     if (typeof getter !== 'function') {
       console.error(`Getter key doesn't exist => ${key}`);
       return;
