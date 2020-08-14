@@ -4,8 +4,8 @@
   "version": "0.0.1",
   "author": "muukojima",
   "license": "MIT",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
