@@ -54,17 +54,21 @@ interface Events {
 interface Payload {
   [key: string]: unknown
 }
+
+interface StringKeyObj {
+  [key: string]: any
+}
+
 /**
  * Find "nested" object property
  * @see https://github.com/mout/mout/blob/master/src/object/get.js
  */
-const findNestedObjByProp = <T, U>(obj: T, prop: string): U => {
-  const parts = prop.split('.');
-  const last = parts.pop() || '';
-  while ((prop = parts.shift() || '')) {
-    obj = obj[prop];
-  }
-  return obj[last];
+const findNestedObjByProp = <T>(obj: StringKeyObj, prop: string): T => {
+  const paths = prop.split('.');
+  const location = paths.reduce((object, path) => {
+      return (object || {})[path];
+  }, obj);
+  return location;
 };
 /**
  * Publish and Subscribe class
@@ -123,7 +127,7 @@ export default class SimpleStateManager {
    * Dispatch action event
    */
   public dispatch(key: string, payload: Payload): Promise<unknown> {
-    const action = findNestedObjByProp<Store<ActionKeys, NestedActions>, Action>(this.actions, key);
+    const action = findNestedObjByProp<Action>(this.actions, key);
     if (typeof action !== 'function') {
       console.error(`Action key doesn't exist => ${key}`);
       return window.Promise.reject();
@@ -135,10 +139,10 @@ export default class SimpleStateManager {
     return action(context, payload);
   }
   /**
-   * Commit that modifies the states
+   * Commit that modifies the statesZZ
    */
   public commit(key: string, payload: Payload): void {
-    const mutation = findNestedObjByProp<Store<MuationKeys, NestedMutaions>, Mutation>(this.mutations, key);
+    const mutation = findNestedObjByProp<Mutation>(this.mutations, key);
     if (typeof mutation !== 'function') {
       console.error(`Mutation key doesn't exist => ${key}`);
       return;
@@ -153,7 +157,7 @@ export default class SimpleStateManager {
    * Get target state value by key
    */
   public getters(key: string, payload: Payload): unknown {
-    const getter = findNestedObjByProp<Store<GetterKeys, NestedGetters>, Getter>(this._getters, key);
+    const getter = findNestedObjByProp<Getter>(this._getters, key);
     if (typeof getter !== 'function') {
       console.error(`Getter key doesn't exist => ${key}`);
       return;

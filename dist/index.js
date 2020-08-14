@@ -25,14 +25,11 @@ function _createClass(Constructor, protoProps, staticProps) {
  * @see https://github.com/mout/mout/blob/master/src/object/get.js
  */
 var findNestedObjByProp = function findNestedObjByProp(obj, prop) {
-  var parts = prop.split('.');
-  var last = parts.pop() || '';
-
-  while (prop = parts.shift() || '') {
-    obj = obj[prop];
-  }
-
-  return obj[last];
+  var paths = prop.split('.');
+  var location = paths.reduce(function (object, path) {
+    return (object || {})[path];
+  }, obj);
+  return location;
 };
 /**
  * Publish and Subscribe class
@@ -134,7 +131,7 @@ var SimpleStateManager = /*#__PURE__*/function () {
       return action(context, payload);
     }
     /**
-     * Commit that modifies the states
+     * Commit that modifies the statesZZ
      */
 
   }, {

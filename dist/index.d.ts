@@ -66,7 +66,7 @@ export default class SimpleStateManager {
      */
     dispatch(key: string, payload: Payload): Promise<unknown>;
     /**
-     * Commit that modifies the states
+     * Commit that modifies the statesZZ
      */
     commit(key: string, payload: Payload): void;
     /**
