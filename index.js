@@ -25,19 +25,11 @@ function _createClass(Constructor, protoProps, staticProps) {
  * @see https://github.com/mout/mout/blob/master/src/object/get.js
  */
 var findNestedObjByProp = function findNestedObjByProp(obj, prop) {
-  if (!obj) {
-    return null;
-  }
-
   var parts = prop.split('.');
   var last = parts.pop() || '';
 
   while (prop = parts.shift() || '') {
     obj = obj[prop];
-
-    if (!obj) {
-      return null;
-    }
   }
 
   return obj[last];
@@ -102,13 +94,13 @@ var PubSub = /*#__PURE__*/function () {
 
 
 var SimpleStateManager = /*#__PURE__*/function () {
-  function SimpleStateManager(roles) {
+  function SimpleStateManager(stores) {
     _classCallCheck(this, SimpleStateManager);
 
-    var actions = roles.actions,
-        mutations = roles.mutations,
-        states = roles.states,
-        getters = roles.getters;
+    var actions = stores.actions,
+        mutations = stores.mutations,
+        states = stores.states,
+        getters = stores.getters;
 
     if (!actions || !mutations || !states || !getters) {
       throw new Error('You must add actions, mutations, states, getters');
@@ -127,8 +119,7 @@ var SimpleStateManager = /*#__PURE__*/function () {
 
   _createClass(SimpleStateManager, [{
     key: "dispatch",
-    value: function dispatch(key) {
-      var payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    value: function dispatch(key, payload) {
       var action = findNestedObjByProp(this.actions, key);
 
       if (typeof action !== 'function') {
@@ -148,8 +139,7 @@ var SimpleStateManager = /*#__PURE__*/function () {
 
   }, {
     key: "commit",
-    value: function commit(key) {
-      var payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    value: function commit(key, payload) {
       var mutation = findNestedObjByProp(this.mutations, key);
 
       if (typeof mutation !== 'function') {
@@ -169,8 +159,7 @@ var SimpleStateManager = /*#__PURE__*/function () {
 
   }, {
     key: "getters",
-    value: function getters(key) {
-      var payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    value: function getters(key, payload) {
       var getter = findNestedObjByProp(this._getters, key);
 
       if (typeof getter !== 'function') {

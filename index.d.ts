@@ -1,36 +1,55 @@
-interface Roles {
-    actions: Actions;
-    mutations: Mutaions;
+interface Stores {
+    actions: Store<ActionKeys, NestedActions>;
+    mutations: Store<MuationKeys, NestedMutaions>;
     states: unknown;
-    getters: Getters;
+    getters: Store<GetterKeys, NestedGetters>;
 }
-interface Actions {
+declare type Store<T, U> = StoreKeys<T> | NestedStore<U>;
+interface StoreKeys<T> {
+    [key: string]: T;
+}
+interface NestedStore<U> {
+    [key: string]: U;
+}
+interface ActionKeys {
     [key: string]: Action;
 }
 interface Action {
-    (context: ActionContext, payload: unknown): Promise<unknown>;
+    (context: ActionContext, payload: Payload): Promise<unknown>;
 }
 interface ActionContext {
-    commit: (key: string, payload: unknown) => void;
-    getters: (key: string, payload: unknown) => unknown;
+    commit: (key: string, payload: Payload) => void;
+    getters: (key: string, payload: Payload) => unknown;
 }
-interface Mutaions {
+interface NestedActions {
+    [key: string]: Store<ActionKeys, NestedActions>;
+}
+interface MuationKeys {
     [key: string]: Mutation;
 }
 interface Mutation {
-    (context: MutationContext, payload: unknown): string;
+    (context: MutationContext, payload: Payload): string;
 }
 interface MutationContext {
     states: unknown;
 }
-interface Getters {
+interface NestedMutaions {
+    [key: string]: Store<MuationKeys, NestedMutaions>;
+}
+interface GetterKeys {
     [key: string]: Getter;
 }
 interface Getter {
-    (context: GetterContext, payload: unknown): unknown;
+    (context: GetterContext, payload: Payload): unknown;
 }
 interface GetterContext {
     states: unknown;
+}
+interface NestedGetters {
+    [key: string]: Store<GetterKeys, NestedGetters>;
+}
+interface Payload {
+    [key: string]: unknown;
 }
 /**
  * SimpleStateManager class
@@ -41,19 +60,19 @@ export default class SimpleStateManager {
     private mutations;
     private states;
     private _getters;
-    constructor(roles: Roles);
+    constructor(stores: Stores);
     /**
      * Dispatch action event
      */
-    dispatch(key: string, payload?: unknown): Promise<unknown>;
+    dispatch(key: string, payload: Payload): Promise<unknown>;
     /**
      * Commit that modifies the states
      */
-    commit(key: string, payload?: unknown): void;
+    commit(key: string, payload: Payload): void;
     /**
      * Get target state value by key
      */
-    getters(key: string, payload?: unknown): unknown;
+    getters(key: string, payload: Payload): unknown;
     /**
      * Subscribe event
      */

@@ -1,100 +1,79 @@
 interface Stores {
-  actions: Actions
-  mutations: Mutaions,
+  actions: Store<ActionKeys, NestedActions>
+  mutations: Store<MuationKeys, NestedMutaions>,
   states: unknown,
-  getters: Getters
+  getters: Store<GetterKeys, NestedGetters>
 }
-
-type Actions = ActionKeys | NestedActions;
-type Mutaions = MuationKeys | NestedMutaions
-type Getters = GetterKeys | NestedGetters
-
+type Store<T, U> = StoreKeys<T> | NestedStore<U>;
+interface StoreKeys<T> {
+  [key :string]: T;
+}
+interface NestedStore<U> {
+  [key :string]: U
+}
 interface ActionKeys {
   [key :string]: Action
 }
-
-interface NestedActions {
-  [key :string]: Actions
-}
-
 interface Action {
-  (context: ActionContext, payload: unknown): Promise<unknown>
+  (context: ActionContext, payload: Payload): Promise<unknown>
 }
-
 interface ActionContext {
-  commit: (key: string, payload: unknown) => void,
-  getters: (key: string, payload: unknown) => unknown,
+  commit: (key: string, payload: Payload) => void,
+  getters: (key: string, payload: Payload) => unknown,
 }
-
-interface NestedMutaions {
-  [key :string]: Mutaions
+interface NestedActions {
+  [key :string]: Store<ActionKeys, NestedActions>
 }
-
 interface MuationKeys {
-  [key :string]: Mutaions
+  [key :string]: Mutation
 }
-
 interface Mutation {
-  (context: MutationContext, payload: unknown): string
+  (context: MutationContext, payload: Payload): string
 }
-
 interface MutationContext {
   states: unknown
 }
-
-interface NestedGetters {
-  [key :string]: Getters
+interface NestedMutaions {
+  [key :string]: Store<MuationKeys, NestedMutaions>
 }
-
 interface GetterKeys {
-  [key :string]: Getters
+  [key :string]: Getter
 }
-
 interface Getter {
-  (context: GetterContext, payload: unknown): unknown
+  (context: GetterContext, payload: Payload): unknown
 }
-
 interface GetterContext {
   states: unknown
 }
-
-interface Events  {
+interface NestedGetters {
+  [key :string]: Store<GetterKeys, NestedGetters>
+}
+interface Events {
   [key :string]: Array<() => void>;
 }
-
-interface NestedObj<T> {
-  [key :string]: T;
+interface Payload {
+  [key: string]: unknown
 }
-
 /**
  * Find "nested" object property
  * @see https://github.com/mout/mout/blob/master/src/object/get.js
  */
-const findNestedObjByProp = <T>(obj: NestedObj<T> | {}, prop: string): T => {
-  if (!obj) {
-    return null;
-  }
+const findNestedObjByProp = <T, U>(obj: T, prop: string): U => {
   const parts = prop.split('.');
   const last = parts.pop() || '';
   while ((prop = parts.shift() || '')) {
     obj = obj[prop];
-    if (!obj) {
-      return null;
-    }
   }
   return obj[last];
 };
-
 /**
  * Publish and Subscribe class
  */
 class PubSub {
   private events: Events;
-
   constructor() {
     this.events = {};
   }
-
   /**
    * Subscribe event
    */
@@ -110,7 +89,6 @@ class PubSub {
     };
     return unsubscribe;
   }
-
   /**
    * Publish the event
    */
@@ -121,17 +99,15 @@ class PubSub {
     this.events[eventName].forEach(callback => callback());
   }
 }
-
 /**
  * SimpleStateManager class
  */
 export default class SimpleStateManager {
   private events: PubSub;
-  private actions: Actions;
-  private mutations: Mutaions;
+  private actions: Store<ActionKeys, NestedActions>;
+  private mutations: Store<MuationKeys, NestedMutaions>;
   private states: unknown;
-  private _getters: Getters;
-
+  private _getters: Store<GetterKeys, NestedGetters>;
   constructor(stores: Stores) {
     const {actions, mutations, states, getters} = stores;
     if (!actions || !mutations || !states || !getters) {
@@ -143,12 +119,11 @@ export default class SimpleStateManager {
     this.states = states;
     this._getters = getters;
   }
-
   /**
    * Dispatch action event
    */
-  public dispatch(key: string, payload: unknown = {}): Promise<unknown> {
-    const action = findNestedObjByProp<Action>(this.actions, key);
+  public dispatch(key: string, payload: Payload): Promise<unknown> {
+    const action = findNestedObjByProp<Store<ActionKeys, NestedActions>, Action>(this.actions, key);
     if (typeof action !== 'function') {
       console.error(`Action key doesn't exist => ${key}`);
       return window.Promise.reject();
@@ -159,12 +134,11 @@ export default class SimpleStateManager {
     };
     return action(context, payload);
   }
-
   /**
    * Commit that modifies the states
    */
-  public commit(key: string, payload: unknown = {}): void {
-    const mutation = findNestedObjByProp<Mutation>(this.mutations, key);
+  public commit(key: string, payload: Payload): void {
+    const mutation = findNestedObjByProp<Store<MuationKeys, NestedMutaions>, Mutation>(this.mutations, key);
     if (typeof mutation !== 'function') {
       console.error(`Mutation key doesn't exist => ${key}`);
       return;
@@ -175,12 +149,11 @@ export default class SimpleStateManager {
     const eventName = mutation(context, payload);
     this.events.publish(eventName);
   }
-
   /**
    * Get target state value by key
    */
-  public getters(key: string, payload: unknown = {}): unknown {
-    const getter = findNestedObjByProp<Getter>(this._getters, key);
+  public getters(key: string, payload: Payload): unknown {
+    const getter = findNestedObjByProp<Store<GetterKeys, NestedGetters>, Getter>(this._getters, key);
     if (typeof getter !== 'function') {
       console.error(`Getter key doesn't exist => ${key}`);
       return;
@@ -190,7 +163,6 @@ export default class SimpleStateManager {
     };
     return getter(context, payload);
   }
-
   /**
    * Subscribe event
    */
