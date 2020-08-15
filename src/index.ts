@@ -91,7 +91,7 @@ export default class SimpleStateManagement {
   /**
    * Dispatch action event
    */
-  public dispatch(actionName: string, payload: StringKeyObject): Promise<unknown> {
+  public dispatch(actionName: string, payload?: StringKeyObject): Promise<unknown> {
     const action = findNestedObj(this.actions, actionName);
     if (typeof action !== 'function') {
       console.error(`Action: actionName doesn't exist => ${actionName}`);
@@ -106,7 +106,7 @@ export default class SimpleStateManagement {
   /**
    * Commit that modifies the states
    */
-  public commit(mutationName: string, payload: StringKeyObject): void {
+  public commit(mutationName: string, payload?: StringKeyObject): void {
     const mutation = findNestedObj(this.mutations, mutationName);
     if (typeof mutation !== 'function') {
       console.error(`Mutation: mutationName doesn't exist => ${mutationName}`);
@@ -121,7 +121,7 @@ export default class SimpleStateManagement {
   /**
    * Get state
    */
-  public getters(getterName: string, payload: StringKeyObject): unknown {
+  public getters(getterName: string, payload?: StringKeyObject): unknown {
     const getter = findNestedObj(this.getters_, getterName);
     if (typeof getter !== 'function') {
       console.error(`Getter: getterName doesn't exist => ${getterName}`);
