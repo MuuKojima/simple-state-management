@@ -20,4 +20,4 @@ TODO:
 
 ## Full Web Service Demonstration
 
-https://dev-hostile-architecture.netlify.app/
+https://hostile-architecture.org/
