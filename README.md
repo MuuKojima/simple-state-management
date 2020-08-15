@@ -2,7 +2,7 @@
 
 simple state management library for frontend
 
-<img src="https://github.com/MuuKojima/simple-state-manager/blob/develop/art/architecture.png" />
+<img src="https://github.com/MuuKojima/simple-state-manager/blob/develop/art/architecture.png?raw=true" />
 
 ## Installation
 
