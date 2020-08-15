@@ -12,7 +12,7 @@ $ npm install --save simple-state-management
 
 ## Usage
 
-Demo file stracture
+Demo file stractures
 ```
 ├── src
  ├── index.html
