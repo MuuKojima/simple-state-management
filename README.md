@@ -30,7 +30,7 @@ https://hostile-architecture.org/
 
 ## Usage
 
-#### Init library
+### Initialize library
 
 stores.js
 ```
@@ -49,7 +49,7 @@ export default new SimpleStateManagement({
 });
 ```
 
-#### Subscribe in your components
+### Subscribe in your components
 
 app.js
 ```
@@ -80,5 +80,4 @@ render() {
 unmount() {
   this.unsbscribe();
 }
-
 ```
