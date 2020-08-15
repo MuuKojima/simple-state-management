@@ -1,4 +1,4 @@
-import SimpleStateManagement from '../../../../lib';
+import SimpleStateManagement from '../../../lib';
 
 import actions from './actions';
 import getters from './getters';

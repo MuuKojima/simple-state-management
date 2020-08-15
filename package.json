@@ -1,7 +1,7 @@
 {
   "name": "simple-state-management",
   "description": "Simple state management library",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "author": "muukojima",
   "license": "MIT",
   "main": "./lib/index.js",

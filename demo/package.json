@@ -1,7 +1,8 @@
 {
-  "name": "totos",
+  "name": "todos",
   "version": "0.0.1",
-  "description": "totos",
+  "description": "todos",
+  "license": "MIT",
   "main": "./src/index.js",
   "scripts": {
     "start": "webpack-dev-server --mode=development",

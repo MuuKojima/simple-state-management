@@ -18,7 +18,7 @@ $ npm install --save simple-state-management
 <img src="https://github.com/MuuKojima/simple-state-manager/blob/develop/art/demo.png?raw=true" />
 
 ```
-$ cd demo/todos
+$ cd demo
 $ npm install .
 $ npm run start
 -> localhost:8080
@@ -63,6 +63,8 @@ this.unsbscribe = store.subscribe('todos', () => {
   this.list = store.getters('todos.list');
   this.render();
 });
+
+...
 
 // Render view
 render() {
