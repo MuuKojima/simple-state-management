@@ -21,15 +21,13 @@ function _createClass(Constructor, protoProps, staticProps) {
 }
 
 /**
- * Find "nested" object property
- * @see https://github.com/mout/mout/blob/master/src/object/get.js
+ * Find "nested" object
  */
-var findNestedObjByProp = function findNestedObjByProp(obj, prop) {
-  var paths = prop.split('.');
-  var location = paths.reduce(function (object, path) {
+var findNestedObj = function findNestedObj(obj, name) {
+  var paths = name.split('.');
+  return paths.reduce(function (object, path) {
     return (object || {})[path];
   }, obj);
-  return location;
 };
 /**
  * Publish and Subscribe class
@@ -86,13 +84,13 @@ var PubSub = /*#__PURE__*/function () {
   return PubSub;
 }();
 /**
- * SimpleStateManager class
+ * SimpleStateStore class
  */
 
 
-var SimpleStateManager = /*#__PURE__*/function () {
-  function SimpleStateManager(stores) {
-    _classCallCheck(this, SimpleStateManager);
+var SimpleStateManagement = /*#__PURE__*/function () {
+  function SimpleStateManagement(stores) {
+    _classCallCheck(this, SimpleStateManagement);
 
     var actions = stores.actions,
         mutations = stores.mutations,
@@ -107,20 +105,20 @@ var SimpleStateManager = /*#__PURE__*/function () {
     this.actions = actions;
     this.mutations = mutations;
     this.states = states;
-    this._getters = getters;
+    this.getters_ = getters;
   }
   /**
    * Dispatch action event
    */
 
 
-  _createClass(SimpleStateManager, [{
+  _createClass(SimpleStateManagement, [{
     key: "dispatch",
-    value: function dispatch(key, payload) {
-      var action = findNestedObjByProp(this.actions, key);
+    value: function dispatch(actionName, payload) {
+      var action = findNestedObj(this.actions, actionName);
 
       if (typeof action !== 'function') {
-        console.error("Action key doesn't exist => ".concat(key));
+        console.error("Action: actionName doesn't exist => ".concat(actionName));
         return window.Promise.reject();
       }
 
@@ -131,16 +129,16 @@ var SimpleStateManager = /*#__PURE__*/function () {
       return action(context, payload);
     }
     /**
-     * Commit that modifies the statesZZ
+     * Commit that modifies the states
      */
 
   }, {
     key: "commit",
-    value: function commit(key, payload) {
-      var mutation = findNestedObjByProp(this.mutations, key);
+    value: function commit(mutationName, payload) {
+      var mutation = findNestedObj(this.mutations, mutationName);
 
       if (typeof mutation !== 'function') {
-        console.error("Mutation key doesn't exist => ".concat(key));
+        console.error("Mutation: mutationName doesn't exist => ".concat(mutationName));
         return;
       }
 
@@ -151,16 +149,16 @@ var SimpleStateManager = /*#__PURE__*/function () {
       this.events.publish(eventName);
     }
     /**
-     * Get target state value by key
+     * Get state
      */
 
   }, {
     key: "getters",
-    value: function getters(key, payload) {
-      var getter = findNestedObjByProp(this._getters, key);
+    value: function getters(getterName, payload) {
+      var getter = findNestedObj(this.getters_, getterName);
 
       if (typeof getter !== 'function') {
-        console.error("Getter key doesn't exist => ".concat(key));
+        console.error("Getter: getterName doesn't exist => ".concat(getterName));
         return;
       }
 
@@ -180,7 +178,7 @@ var SimpleStateManager = /*#__PURE__*/function () {
     }
   }]);
 
-  return SimpleStateManager;
+  return SimpleStateManagement;
 }();
 
-export default SimpleStateManager;
+export default SimpleStateManagement;

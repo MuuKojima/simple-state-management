@@ -1,73 +1,37 @@
 interface Stores {
-  actions: Store<ActionKeys, NestedActions>
-  mutations: Store<MuationKeys, NestedMutaions>,
+  actions: StringKeyObject
+  mutations:StringKeyObject,
   states: unknown,
-  getters: Store<GetterKeys, NestedGetters>
+  getters: StringKeyObject
 }
-type Store<T, U> = StoreKeys<T> | NestedStore<U>;
-interface StoreKeys<T> {
-  [key :string]: T;
-}
-interface NestedStore<U> {
-  [key :string]: U
-}
-interface ActionKeys {
-  [key :string]: Action
-}
-interface Action {
-  (context: ActionContext, payload: Payload): Promise<unknown>
-}
+
 interface ActionContext {
-  commit: (key: string, payload: Payload) => void,
-  getters: (key: string, payload: Payload) => unknown,
+  commit: (mutationName: string, payload: StringKeyObject) => void,
+  getters: (getterName: string, payload: StringKeyObject) => unknown,
 }
-interface NestedActions {
-  [key :string]: Store<ActionKeys, NestedActions>
-}
-interface MuationKeys {
-  [key :string]: Mutation
-}
-interface Mutation {
-  (context: MutationContext, payload: Payload): string
-}
+
 interface MutationContext {
   states: unknown
 }
-interface NestedMutaions {
-  [key :string]: Store<MuationKeys, NestedMutaions>
-}
-interface GetterKeys {
-  [key :string]: Getter
-}
-interface Getter {
-  (context: GetterContext, payload: Payload): unknown
-}
+
 interface GetterContext {
   states: unknown
 }
-interface NestedGetters {
-  [key :string]: Store<GetterKeys, NestedGetters>
-}
+
 interface Events {
   [key :string]: Array<() => void>;
 }
-interface Payload {
-  [key: string]: unknown
-}
 
-interface StringKeyObj {
+interface StringKeyObject {
   [key: string]: any
 }
 
 /**
  * Find "nested" object
  */
-const findNestedObj = <T>(obj: StringKeyObj, prop: string): T => {
-  const paths = prop.split('.');
-  const location = paths.reduce((object, path) => {
-      return (object || {})[path];
-  }, obj);
-  return location;
+const findNestedObj = (obj: StringKeyObject, name: string): StringKeyObject => {
+  const paths = name.split('.');
+  return paths.reduce((object, path) => (object || {})[path], obj);
 };
 
 /**
@@ -104,14 +68,14 @@ class PubSub {
   }
 }
 /**
- * SimpleStateManager class
+ * SimpleStateStore class
  */
-export default class SimpleStateManager {
+export default class SimpleStateManagement {
   private events: PubSub;
-  private actions: Store<ActionKeys, NestedActions>;
-  private mutations: Store<MuationKeys, NestedMutaions>;
+  private actions: StringKeyObject;
+  private mutations: StringKeyObject;
   private states: unknown;
-  private _getters: Store<GetterKeys, NestedGetters>;
+  private getters_: StringKeyObject;
   constructor(stores: Stores) {
     const {actions, mutations, states, getters} = stores;
     if (!actions || !mutations || !states || !getters) {
@@ -121,15 +85,15 @@ export default class SimpleStateManager {
     this.actions = actions;
     this.mutations = mutations;
     this.states = states;
-    this._getters = getters;
+    this.getters_ = getters;
   }
   /**
    * Dispatch action event
    */
-  public dispatch(key: string, payload: Payload): Promise<unknown> {
-    const action = findNestedObj<Action>(this.actions, key);
+  public dispatch(actionName: string, payload: StringKeyObject): Promise<unknown> {
+    const action = findNestedObj(this.actions, actionName);
     if (typeof action !== 'function') {
-      console.error(`Action key doesn't exist => ${key}`);
+      console.error(`Action: actionName doesn't exist => ${actionName}`);
       return window.Promise.reject();
     }
     const context: ActionContext = {
@@ -139,12 +103,12 @@ export default class SimpleStateManager {
     return action(context, payload);
   }
   /**
-   * Commit that modifies the statesZZ
+   * Commit that modifies the states
    */
-  public commit(key: string, payload: Payload): void {
-    const mutation = findNestedObj<Mutation>(this.mutations, key);
+  public commit(mutationName: string, payload: StringKeyObject): void {
+    const mutation = findNestedObj(this.mutations, mutationName);
     if (typeof mutation !== 'function') {
-      console.error(`Mutation key doesn't exist => ${key}`);
+      console.error(`Mutation: mutationName doesn't exist => ${mutationName}`);
       return;
     }
     const context: MutationContext = {
@@ -154,12 +118,12 @@ export default class SimpleStateManager {
     this.events.publish(eventName);
   }
   /**
-   * Get target state value by key
+   * Get state
    */
-  public getters(key: string, payload: Payload): unknown {
-    const getter = findNestedObj<Getter>(this._getters, key);
+  public getters(getterName: string, payload: StringKeyObject): unknown {
+    const getter = findNestedObj(this.getters_, getterName);
     if (typeof getter !== 'function') {
-      console.error(`Getter key doesn't exist => ${key}`);
+      console.error(`Getter: getterName doesn't exist => ${getterName}`);
       return;
     }
     const context: GetterContext = {
