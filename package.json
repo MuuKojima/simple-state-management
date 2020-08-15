@@ -1,14 +1,14 @@
 {
   "name": "simple-state-management",
   "description": "Simple state management library",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "muukojima",
   "license": "MIT",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MuuKojima/simple-state-manager.git"
+    "url": "git+https://github.com/MuuKojima/simple-state-management.git"
   },
   "keywords": [
     "flux"
