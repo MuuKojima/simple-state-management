@@ -12,28 +12,7 @@ $ npm install --save simple-state-management
 
 ## Usage
 
-Demo file stractures
-```
-├── src
- ├── index.html
- ├── index.js
- └── stores
-     ├── index.js
-     ├── actions
-     │   ├── index.js
-     │   ├── todos.js
-     ├── getters
-     │   ├── index.js
-     │   ├── todos.js
-     ├── mutations
-     │   ├── index.js
-     │   ├── todos.js
-     └── states
-         ├── index.js
-         ├── todos.js
-```
-
-src/stores/index.js
+stores/index.js
 ```
 import SimpleStateManagement from 'simple-state-management';
 
@@ -50,7 +29,7 @@ export default new SimpleStateManagement({
 });
 ```
 
-src/index.js
+index.js
 ```
 import store from './stores';
 
@@ -62,7 +41,7 @@ store.dispatch('todos.fetchList');
 ...
 
 // Subcribe event
-this.unsbscribeTodos = store.subscribe('todos', () => {
+this.unsbscribe = store.subscribe('todos', () => {
   this.list = store.getters('todos.list');
   this.render();
 });
@@ -71,6 +50,13 @@ this.unsbscribeTodos = store.subscribe('todos', () => {
 render() {
   console.log('render => ' this.list);
 }
+
+...
+
+unmount() {
+  this.unsbscribe();
+}
+
 ```
 
 ## Demo
@@ -81,7 +67,7 @@ render() {
 $ cd demo/todos
 $ npm install .
 $ npm run start
--> localhost:8080 
+-> localhost:8080
 ```
 
 ## Real WebService Demo
