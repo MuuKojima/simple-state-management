@@ -31,6 +31,7 @@ interface StringKeyObject {
  */
 const findNestedObj = (obj: StringKeyObject, name: string): StringKeyObject => {
   const paths = name.split('.');
+  // Oliver Steele’s pattern
   return paths.reduce((object, path) => (object || {})[path], obj);
 };
 

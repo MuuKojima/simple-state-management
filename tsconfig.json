@@ -9,7 +9,7 @@
     "noImplicitReturns": true,
     "esModuleInterop": true,
     "noUnusedLocals": true,
-    "declarationDir": "./dist",
+    "declarationDir": "./lib",
     "declaration": true,
   },
   "include": [
