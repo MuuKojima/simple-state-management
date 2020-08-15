@@ -30,6 +30,8 @@ https://hostile-architecture.org/
 
 ## Usage
 
+#### Init library
+
 stores.js
 ```
 import SimpleStateManagement from 'simple-state-management';
@@ -46,6 +48,8 @@ export default new SimpleStateManagement({
   states
 });
 ```
+
+#### Subscribe in your components
 
 app.js
 ```
