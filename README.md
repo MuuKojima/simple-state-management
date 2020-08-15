@@ -1,5 +1,8 @@
 # Simple State Management
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm version](https://badge.fury.io/js/simple-state-management.svg)](https://badge.fury.io/js/simple-state-management)
+
 simple state management library for frontend
 
 <img src="https://github.com/MuuKojima/simple-state-manager/blob/develop/art/architecture.png?raw=true" />
@@ -10,9 +13,24 @@ simple state management library for frontend
 $ npm install --save simple-state-management
 ```
 
+## Demo
+
+<img src="https://github.com/MuuKojima/simple-state-manager/blob/develop/art/demo.png?raw=true" />
+
+```
+$ cd demo/todos
+$ npm install .
+$ npm run start
+-> localhost:8080
+```
+
+## Real WebService Demo
+
+https://hostile-architecture.org/
+
 ## Usage
 
-stores/index.js
+stores.js
 ```
 import SimpleStateManagement from 'simple-state-management';
 
@@ -29,7 +47,7 @@ export default new SimpleStateManagement({
 });
 ```
 
-index.js
+app.js
 ```
 import store from './stores';
 
@@ -58,18 +76,3 @@ unmount() {
 }
 
 ```
-
-## Demo
-
-<img src="https://github.com/MuuKojima/simple-state-manager/blob/develop/art/demo.png?raw=true" />
-
-```
-$ cd demo/todos
-$ npm install .
-$ npm run start
--> localhost:8080
-```
-
-## Real WebService Demo
-
-https://hostile-architecture.org/
