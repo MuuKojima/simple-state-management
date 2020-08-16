@@ -1,0 +1,48 @@
+body {
+  color: black;
+}
+
+todo-app {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  flex-direction: column;
+}
+
+.todos {
+  width: 300px;
+}
+
+.user {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  align-items: center;
+  justify-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.input {
+  flex-grow: 1;
+}
+
+.submit {
+  display: block;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item + .item {
+  margin-top: 20px;
+}
+
+.item__title--checked {
+  text-decoration: line-through;
+}

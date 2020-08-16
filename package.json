@@ -1,14 +1,43 @@
 {
-  "name": "simple-state-manager",
+  "name": "simple-state-management",
   "description": "Simple state management library",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "author": "muukojima",
   "license": "MIT",
-  "main": "index.js",
-  "scripts": {
-    "lint": "eslint ."
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MuuKojima/simple-state-management.git"
   },
+  "keywords": [
+    "flux",
+    "state",
+    "machine",
+    "state machine",
+    "statemachine",
+    "finite"
+  ],
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf lib",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "rollup -c",
+    "build": "npm run lint && npm run clean && npm run build:types && npm run build:js",
+    "lint": "eslint . --ext .ts"
+  },
+  "dependencies": {},
   "devDependencies": {
-    "eslint": "^7.6.0"
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-typescript": "^7.10.4",
+    "@rollup/plugin-babel": "^5.1.0",
+    "@typescript-eslint/eslint-plugin": "^3.8.0",
+    "@typescript-eslint/parser": "^3.8.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.6.0",
+    "rollup": "^2.23.1",
+    "typescript": "^3.9.7"
   }
 }
