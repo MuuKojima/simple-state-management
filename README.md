@@ -15,6 +15,8 @@ $ npm install --save simple-state-management
 
 ## Demo
 
+https://simple-state-management.netlify.app/
+
 <img src="https://github.com/MuuKojima/simple-state-manager/blob/develop/art/demo.png?raw=true" />
 
 ```
@@ -72,7 +74,7 @@ this.unsbscribe = store.subscribe('todos', () => {
 
 // Render view
 render() {
-  console.log('render => ' this.list);
+  console.log('render => ', this.list);
 }
 
 ...
