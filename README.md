@@ -26,7 +26,7 @@ $ npm run start
 -> localhost:8080
 ```
 
-## Real WebService Demo
+## Real Application Demo
 
 https://hostile-architecture.org/
 
