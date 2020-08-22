@@ -17,7 +17,7 @@ $ npm install --save simple-state-management
 
 https://simple-state-management.netlify.app/
 
-<img src="https://github.com/MuuKojima/simple-state-manager/blob/develop/art/demo.png?raw=true" />
+<img src="https://github.com/MuuKojima/simple-state-management/blob/develop/art/demo.gif?raw=true" />
 
 ```
 $ cd demo
