@@ -20,15 +20,15 @@ export default class SimpleStateManagement {
     /**
      * Dispatch action event
      */
-    dispatch(actionName: string, payload: StringKeyObject): Promise<unknown>;
+    dispatch(actionName: string, payload?: StringKeyObject): Promise<unknown>;
     /**
      * Commit that modifies the states
      */
-    commit(mutationName: string, payload: StringKeyObject): void;
+    commit(mutationName: string, payload?: StringKeyObject): void;
     /**
      * Get state
      */
-    getters(getterName: string, payload: StringKeyObject): unknown;
+    getters(getterName: string, payload?: StringKeyObject): unknown;
     /**
      * Subscribe event
      */
