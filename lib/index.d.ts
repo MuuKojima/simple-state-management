@@ -33,5 +33,9 @@ export default class SimpleStateManagement {
      * Subscribe event
      */
     subscribe(eventName: string, callback: () => void): () => void;
+    /**
+     * Find "nested" object
+     */
+    private findNestedObj;
 }
 export {};

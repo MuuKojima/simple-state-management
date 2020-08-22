@@ -27,15 +27,6 @@ interface StringKeyObject {
 }
 
 /**
- * Find "nested" object
- */
-const findNestedObj = (obj: StringKeyObject, name: string): StringKeyObject => {
-  const paths = name.split('.');
-  // Oliver Steele’s pattern
-  return paths.reduce((object, path) => (object || {})[path], obj);
-};
-
-/**
  * Publish and Subscribe class
  */
 class PubSub {
@@ -68,6 +59,7 @@ class PubSub {
     this.events[eventName].forEach(callback => callback());
   }
 }
+
 /**
  * SimpleStateStore class
  */
@@ -92,7 +84,7 @@ export default class SimpleStateManagement {
    * Dispatch action event
    */
   public dispatch(actionName: string, payload?: StringKeyObject): Promise<unknown> {
-    const action = findNestedObj(this.actions, actionName);
+    const action = this.findNestedObj(this.actions, actionName);
     if (typeof action !== 'function') {
       console.error(`Action: actionName doesn't exist => ${actionName}`);
       return window.Promise.reject();
@@ -107,7 +99,7 @@ export default class SimpleStateManagement {
    * Commit that modifies the states
    */
   public commit(mutationName: string, payload?: StringKeyObject): void {
-    const mutation = findNestedObj(this.mutations, mutationName);
+    const mutation = this.findNestedObj(this.mutations, mutationName);
     if (typeof mutation !== 'function') {
       console.error(`Mutation: mutationName doesn't exist => ${mutationName}`);
       return;
@@ -122,7 +114,7 @@ export default class SimpleStateManagement {
    * Get state
    */
   public getters(getterName: string, payload?: StringKeyObject): unknown {
-    const getter = findNestedObj(this.getters_, getterName);
+    const getter = this.findNestedObj(this.getters_, getterName);
     if (typeof getter !== 'function') {
       console.error(`Getter: getterName doesn't exist => ${getterName}`);
       return;
@@ -137,5 +129,15 @@ export default class SimpleStateManagement {
    */
   public subscribe(eventName: string, callback: () => void): () => void {
     return this.events.subscribe(eventName, callback);
+  }
+
+
+/**
+ * Find "nested" object
+ */
+  private findNestedObj(obj: StringKeyObject, name: string): StringKeyObject {
+    const paths = name.split('.');
+    // Oliver Steele’s pattern
+    return paths.reduce((object, path) => (object || {})[path], obj);
   }
 }
